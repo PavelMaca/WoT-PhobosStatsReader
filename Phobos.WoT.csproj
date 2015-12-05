@@ -83,9 +83,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\Phobos\GlobalExtensions.cs">
-      <Link>GlobalExtensions.cs</Link>
-    </Compile>
     <Compile Include="Suspension.cs" />
     <Compile Include="DataReader.cs" />
     <Compile Include="Gun.cs" />

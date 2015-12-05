@@ -354,7 +354,7 @@ namespace Phobos.WoT
 		{
 			if ((param1 == null) && (param2 == null)) return;
 			if (param1.Equals(param2)) return;
-			if ((visibleStats.Length > 0) && !paramName.In(visibleStats)) return;
+			if ((visibleStats.Length > 0) && !visibleStats.Contains(paramName)) return;
 
 			differences.Add(String.Format("  {0}: {1} -> {2}", paramName, ParamToString(param1), ParamToString(param2)));
 
