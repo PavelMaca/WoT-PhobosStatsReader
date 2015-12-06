@@ -105,8 +105,16 @@ namespace Phobos.WoT
 			this.TurretSides = (int)turret.ArmorSides;
 			this.TurretBack = (int)turret.ArmorBack;
 
-			// AP gun.
-			if ((tank.Type != TankType.Spg) && turret.ApGuns.Any())
+            bool skipApGun = tank.Type == TankType.Spg;
+
+            // T57 (hiddeen arty) shots only AP
+            if (tank.Id == "T57")
+            {
+                skipApGun = false;
+            }
+
+            // AP gun.
+            if (!skipApGun && turret.ApGuns.Any())
 			{
 				Gun penGun = turret.ApGuns.OrderByDescending(g => g.ApPenetration).ThenByDescending(g => g.ApDamage).ThenByDescending(g => g.RateOfFire).First();
 				Gun dmgGun = turret.ApGuns.Where(g => g.ApPenetration >= 0.78f * penGun.ApPenetration).OrderByDescending(g => g.ApDamage).ThenByDescending(g => g.ApPenetration).ThenByDescending(g => g.ApDamagePerMinute).First();
@@ -133,8 +141,23 @@ namespace Phobos.WoT
 				this.HeGun = turret.HeGuns.OrderByDescending(g => g.HeDamage).ThenByDescending(g => g.HePenetration).ThenByDescending(g => g.RateOfFire).First();
 			}
 
-			this.Weight = tank.Weight + s.Weight + turret.Weight + (this.IsUsingHe ? this.HeGun.Weight : this.ApGun.Weight);
-		}
+			//this.Weight = tank.Weight + s.Weight + turret.Weight + (this.IsUsingHe ? this.HeGun.Weight : this.ApGun.Weight);
+            float gunWeight = 0;
+            if (this.IsUsingHe && this.HeGun != null)
+            {
+                gunWeight = this.HeGun.Weight;
+            }
+            else if (this.ApGun != null)
+            {
+                gunWeight = this.ApGun.Weight;
+            }
+            else
+            {
+                Console.WriteLine("no gun");
+            }
+            this.Weight = tank.Weight + s.Weight + turret.Weight + gunWeight;
+
+        }
 		#endregion Constructors
 
 		#region Methods
