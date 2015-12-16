@@ -132,7 +132,7 @@ namespace Phobos.WoT
 				AimingTime = Single.Parse(element.SelectSingleNode("aimingTime").InnerText),
 				Accuracy = Single.Parse(element.SelectSingleNode("shotDispersionRadius").InnerText),
 				ClipSize = clipSize.HasValue ? clipSize.Value : 0,
-				ClipRate = clipSize.HasValue ? (60f / element.ParseInt32("clip/rate").Value) : 0f,
+				ClipRate = clipSize.HasValue ? (60f / element.ParseFloat("clip/rate").Value) : 0f,
 				MinPitch = pitchLimits[1] * -1,
 				MaxPitch = pitchLimits[0] * -1,
 				Weight = element.ParseInt32("weight").Value

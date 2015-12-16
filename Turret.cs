@@ -126,7 +126,7 @@ namespace Phobos.WoT
 						Gun gun = null;
 						if (db.Guns.TryGetValue(nation+"-"+gunElement.Name, out gun))
 						{
-							int? cRate = gunElement.ParseInt32("clip/rate");
+							float? cRate = gunElement.ParseFloat("clip/rate");
 
 							gun = (Gun)gun.Clone();
 							gun.ReloadTime = gunElement.ParseSingle("reloadTime") ?? gun.ReloadTime;

@@ -21,7 +21,14 @@ namespace Phobos.WoT
 			else return null;
 		}
 
-		public static bool? ParseBool(this XmlNode node, string xpath)
+        public static float? ParseFloat(this XmlNode node, string xpath)
+        {
+            XmlNode found = node.SelectSingleNode(xpath);
+            if (found != null) return float.Parse(found.InnerText);
+            else return null;
+        }
+
+        public static bool? ParseBool(this XmlNode node, string xpath)
 		{
 			XmlNode found = node.SelectSingleNode(xpath);
 			if (found != null) return found.InnerText == "true";
