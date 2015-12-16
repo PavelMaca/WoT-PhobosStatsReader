@@ -14,7 +14,7 @@ namespace Phobos.WoT
 		public static readonly Dictionary<string, string> IdRenamesFrom = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 		public static readonly Dictionary<string, string> IdRenamesTo = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 
-		public static readonly string[] Nations = new string[] { "france", "germany", "china", "usa", "ussr", "uk", "japan" };
+		public static readonly string[] Nations = new string[] { "france", "germany", "china", "usa", "ussr", "uk", "japan", "czech" };
 		//public static readonly string[] Types = new string[] { "mediumTank", "lightTank", "Spg", "heavyTank", "AT-Spg" };
 		public static readonly Dictionary<string, string> NationAdjectives = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
 		public static readonly Dictionary<TankType, string> TypeNames = new Dictionary<TankType, string>();
@@ -46,8 +46,9 @@ namespace Phobos.WoT
 			ItemDatabase.NationAdjectives["ussr"] = "russian";
 			ItemDatabase.NationAdjectives["uk"] = "british";
 			ItemDatabase.NationAdjectives["japan"] = "japanese";
+            ItemDatabase.NationAdjectives["czech"] = "czech";
 
-			ItemDatabase.TypeNames[TankType.Medium] = "medium tank";
+            ItemDatabase.TypeNames[TankType.Medium] = "medium tank";
 			ItemDatabase.TypeNames[TankType.Light] = "light tank";
 			ItemDatabase.TypeNames[TankType.Spg] = "artillery";
 			ItemDatabase.TypeNames[TankType.Heavy] = "heavy tank";
