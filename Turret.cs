@@ -74,105 +74,105 @@ namespace Phobos.WoT
 		}
 
 		public override string ToString() { return this.ToString(false); }
-		#endregion Methods
+        #endregion Methods
 
-		#region Static methods
-		
+        #region Static methods
 
-		public static Turret LoadFromXml(Tank tank, ItemDatabase db, XmlElement element, string nation)
-		{
-			if (element.Name.Contains("UE"))
-			{
-				element.IsEmpty = false;
-			}
 
-			float[] yawLimits = element.ParseLimits("yawLimits");
+        public static Turret LoadFromXml(Tank tank, ItemDatabase db, XmlElement element, string nation)
+        {
+            if (element.Name.Contains("UE"))
+            {
+                element.IsEmpty = false;
+            }
 
-			Turret turret = new Turret
-			{
-				Name = element.Name,
-				Tier = (int)element.ParseSingle("level").Value,
-				Price = element.ParseSingle("price").Value,
-				YawStart = yawLimits == null ? -360 : yawLimits[0],
-				YawEnd = yawLimits == null ? 360 : yawLimits[1],
-				Weight = element.ParseSingle("weight").Value,
-				Hp = element.ParseInt32("maxHealth").Value,
-				RotationSpeed = element.ParseSingle("rotationSpeed").Value,
-				ViewRange = element.ParseSingle("circularVisionRadius").Value,
+            float[] yawLimits = element.ParseLimits("yawLimits");
 
-				NotInShop = element.ParseBool("notInShop") ?? false,
-				EmblemSlotCount = element.SelectSingleNode("emblemSlots").ChildNodes.Count - 1
-			};
+            Turret turret = new Turret
+            {
+                Name = element.Name,
+                Tier = (int)element.ParseSingle("level").Value,
+                Price = element.ParseSingle("price").Value,
+                YawStart = yawLimits == null ? -360 : yawLimits[0],
+                YawEnd = yawLimits == null ? 360 : yawLimits[1],
+                Weight = element.ParseSingle("weight").Value,
+                Hp = element.ParseInt32("maxHealth").Value,
+                RotationSpeed = element.ParseSingle("rotationSpeed").Value,
+                ViewRange = element.ParseSingle("circularVisionRadius").Value,
 
-			bool firstYaw = true;
+                NotInShop = element.ParseBool("notInShop") ?? false,
+                EmblemSlotCount = element.SelectSingleNode("emblemSlots").ChildNodes.Count - 1
+            };
 
-			// Guns.
-			if (db.Guns.Count > 0)
-			{
-				foreach (XmlNode node in element.SelectSingleNode("guns").ChildNodes)
-				{
-					if (node.NodeType == XmlNodeType.Element)
-					{
-						XmlElement gunElement = (XmlElement)node;
-						int? clipCount = gunElement.ParseInt32("clip/count");
-						float? clipRate = gunElement.ParseSingle("clip/rate");
+            bool firstYaw = true;
 
-						// Pitch.
-						float[] pitchLimits = Gun.GetPitch(gunElement);
+            // Guns.
+            if (db.Guns.Count > 0)
+            {
+                foreach (XmlNode node in element.SelectSingleNode("guns").ChildNodes)
+                {
+                    if (node.NodeType == XmlNodeType.Element)
+                    {
+                        XmlElement gunElement = (XmlElement)node;
+                        int? clipCount = gunElement.ParseInt32("clip/count");
+                        float? clipRate = gunElement.ParseSingle("clip/rate");
 
-						// Yaw.
-						float[] gunYawLimits = gunElement.ParseLimits("turretYawLimits");
+                        // Pitch.
+                        float[] pitchLimits = Gun.GetPitch(gunElement);
 
-						Gun gun = null;
-						if (db.Guns.TryGetValue(nation+"-"+gunElement.Name, out gun))
-						{
-							float? cRate = gunElement.ParseFloat("clip/rate");
+                        // Yaw.
+                        float[] gunYawLimits = gunElement.ParseLimits("turretYawLimits");
 
-							gun = (Gun)gun.Clone();
-							gun.ReloadTime = gunElement.ParseSingle("reloadTime") ?? gun.ReloadTime;
-							gun.AimingTime = gunElement.ParseSingle("aimingTime") ?? gun.AimingTime;
-							gun.ClipSize = gunElement.ParseInt32("clip/count") ?? gun.ClipSize;
-							gun.ClipRate = cRate == null ? gun.ClipRate : (60f / cRate.Value);
-							gun.Update();
+                        Gun gun = null;
+                        if (db.Guns.TryGetValue(nation + "-" + gunElement.Name, out gun))
+                        {
+                            float? cRate = gunElement.ParseFloat("clip/rate");
 
-							// Pitch.
-							if (pitchLimits != null)
-							{
-								gun.MinPitch = pitchLimits[1] * -1;
-								gun.MaxPitch = pitchLimits[0] * -1;
-							}
+                            gun = (Gun)gun.Clone();
+                            gun.ReloadTime = gunElement.ParseSingle("reloadTime") ?? gun.ReloadTime;
+                            gun.AimingTime = gunElement.ParseSingle("aimingTime") ?? gun.AimingTime;
+                            gun.ClipSize = gunElement.ParseInt32("clip/count") ?? gun.ClipSize;
+                            gun.ClipRate = cRate == null ? gun.ClipRate : (60f / cRate.Value);
+                            gun.Update();
 
-							// Yaw.
-							if (gunYawLimits != null)
-							{
-								gun.YawStart = gunYawLimits[0];
-								gun.YawEnd = gunYawLimits[1];
-							}
+                            // Pitch.
+                            if (pitchLimits != null)
+                            {
+                                gun.MinPitch = pitchLimits[1] * -1;
+                                gun.MaxPitch = pitchLimits[0] * -1;
+                            }
 
-							if ((gun.YawStart != 0) && (gun.YawEnd != 0))
-							{
-								if (firstYaw)
-								{
-									turret.YawStart = gun.YawStart;
-									turret.YawEnd = gun.YawEnd;
-									firstYaw = false;
-								}
-								else
-								{
-									turret.YawStart = Math.Max(turret.YawStart, gun.YawStart);
-									turret.YawEnd = Math.Min(turret.YawEnd, gun.YawEnd);
-								}
-							}
-							
-							turret.Guns.Add(gun);
-						}
-					}
-				}
-			}
+                            // Yaw.
+                            if (gunYawLimits != null)
+                            {
+                                gun.YawStart = gunYawLimits[0];
+                                gun.YawEnd = gunYawLimits[1];
+                            }
 
-			XmlNode primaryArmorNode = element.SelectSingleNode("primaryArmor");
-			//turret.IsInternal = (primaryArmorNode == null) || (turret.YawStart > -40) || (turret.YawEnd < 40);
-			turret.IsInternal = turret.NotInShop && ((turret.YawStart > -40) || (turret.YawEnd < 40) || (turret.EmblemSlotCount <= 0));
+                            if ((gun.YawStart != 0) && (gun.YawEnd != 0))
+                            {
+                                if (firstYaw)
+                                {
+                                    turret.YawStart = gun.YawStart;
+                                    turret.YawEnd = gun.YawEnd;
+                                    firstYaw = false;
+                                }
+                                else
+                                {
+                                    turret.YawStart = Math.Max(turret.YawStart, gun.YawStart);
+                                    turret.YawEnd = Math.Min(turret.YawEnd, gun.YawEnd);
+                                }
+                            }
+
+                            turret.Guns.Add(gun);
+                        }
+                    }
+                }
+            }
+
+            XmlNode primaryArmorNode = element.SelectSingleNode("primaryArmor");
+            //turret.IsInternal = (primaryArmorNode == null) || (turret.YawStart > -40) || (turret.YawEnd < 40);
+			turret.IsInternal = turret.NotInShop && ((turret.YawStart > -40) || (turret.YawEnd < 40));
 
 			// Armor.
 			if (!turret.IsInternal)
@@ -184,8 +184,7 @@ namespace Phobos.WoT
 				turret.ArmorSides = element.ParseSingle("armor/" + primaryArmor[1]).Value;
 				float? value = element.ParseSingle("armor/" + primaryArmor[2]); turret.ArmorBack = value ?? 0;
 			}
-
-			return turret;
+            return turret;
 		}
 		#endregion Static methods
 	}
