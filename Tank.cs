@@ -130,7 +130,8 @@ namespace Phobos.WoT
 			string tagsLower = tags.ToLowerInvariant();
 
 			if (tagsLower.Contains("observer")) return;
-			string type = tags.Split(' ')[0].Split('\r')[0];
+            char[] separators = {' ', '\r', '\n' };
+            string type = tags.Split(separators)[0];
 
 			string[] primaryArmor = element.SelectSingleNode("hull/primaryArmor").InnerText.Split(' ');
 
